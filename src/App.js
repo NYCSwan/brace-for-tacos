@@ -1,9 +1,9 @@
 import React from 'react';
-import logo from './swan_logo.png';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import styled from "styled-components";
 import Home from "./containers/Home";
 import Footer from "./ui/Footer";
+import Header from "./ui/Header";
 
 const AppContainer = styled.div`
   text-align: center;
@@ -12,10 +12,8 @@ const AppContainer = styled.div`
 function App() {
   return (
     <Router>
+      <Header />
           <AppContainer>
-            <header className="App-header">
-              <img src={logo} className="App-logo" alt="logo" />
-            </header>
             <Route exact path="/" component={Home} />
           </AppContainer>
           <Footer />
