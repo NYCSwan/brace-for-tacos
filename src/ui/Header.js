@@ -1,6 +1,6 @@
-import React from 'react'
+import React from "react";
 import styled from "styled-components";
-import logo from '../swan_logo.png';
+import logo from "../swan_logo.png";
 
 function Header() {
   return (
@@ -20,11 +20,11 @@ const Nav = styled.div`
   font-size: calc(10px + 2vmin);
   color: white;
 }
-`
+`;
 const Logo = styled.img`
   height: 2vmin;
   pointer-events: none;
 }
-`
+`;
 
 export default Header;
