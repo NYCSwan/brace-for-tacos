@@ -1,16 +1,26 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
-import Taco from "./Taco";
+import RecipeCard from "./RecipeCard";
+import Search from "../containers/Search";
 
-function TacoList({ tacos }) {
+function TacoList({ tacos, match }) {
   // const [tacos, addTacos] = useState([]);
   // const [taco, setTaco] = useState({});
   // debugger;
+  if (tacos === undefined) {
+    return (
+      <div>
+        <h1>Oops. No tacos yet. Add to your list on the homepage.</h1>
+        <Link to="/">Home</Link>
+      </div>
+    );
+  }
   return (
     <TacoRecipes>
       {tacos.map(t => {
         // debugger;
-        return <Taco key={t.mixin.name} taco={t} />;
+        return <RecipeCard key={t.mixin.name} taco={t} />;
       })}
     </TacoRecipes>
   );
