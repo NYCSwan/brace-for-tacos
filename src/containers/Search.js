@@ -14,15 +14,15 @@ function Search({ onButtonClick }) {
         disabled={loading}
         onClick={e => onButtonClick(e)}
       >
-        click
+        Find a Recipe
       </Button>
     </div>
   );
 }
 
 const Button = styled.button`
-  height: 50px;
-  width: 75px;
+  height: 40px;
+  width: 100px;
 `;
 
 export default Search;
