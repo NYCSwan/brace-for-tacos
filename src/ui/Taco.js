@@ -1,34 +1,42 @@
 import React from "react";
 import styled from "styled-components";
+import { mapKeys } from "lodash";
 import ErrorBoundary from "../containers/ErrorBoundary";
 
-function Taco({ taco }) {
+function Taco({ taco, match }) {
   // const [tacos, addTacos] = useState([]);
   // const [taco, setTaco] = useState({});
-  // debugger;
   return (
     <TacoRecipe>
       <Header>{taco.base_layer.name} Taco</Header>
-      <Component>
+      <Section>
         <Name>{taco.base_layer.name}</Name>
-        <Recipe>{taco.base_layer.recipe}</Recipe>
-      </Component>
-      <Component>
-        <Name>{taco.shell.name}</Name>
-        <Recipe>{taco.shell.recipe}</Recipe>
-      </Component>
-      <Component>
+        <Recipe>
+          {taco.base_layer.description ? taco.base_layer.description : null}
+        </Recipe>
+      </Section>
+      <Section>
         <Name>{taco.mixin.name}</Name>
-        <Recipe>{taco.mixin.recipe}</Recipe>
-      </Component>
-      <Component>
+        <Recipe>
+          {taco.mixin.description ? taco.mixin.description : null}
+        </Recipe>
+      </Section>
+      <Section>
         <Name>{taco.condiment.name}</Name>
-        <Recipe>{taco.condiment.recipe}</Recipe>
-      </Component>
-      <Component>
+        <Recipe>
+          {taco.condiment.description ? taco.condiment.description : null}
+        </Recipe>
+      </Section>
+      <Section>
         <Name>{taco.seasoning.name}</Name>
-        <Recipe>{taco.seasoning.recipe}</Recipe>
-      </Component>
+        <Recipe>
+          {taco.seasoning.description ? taco.seasoning.description : null}
+        </Recipe>
+      </Section>
+      <Section>
+        <Name>{taco.shell.name}</Name>
+      </Section>
+      
     </TacoRecipe>
   );
 }
@@ -58,7 +66,7 @@ const Header = styled.h2`
   text-align: center;
 `;
 
-const Component = styled.div`
+const Section = styled.ul`
   height: auto;
   width: 100%;
   display: flex;
@@ -67,16 +75,26 @@ const Component = styled.div`
   align-items: center;
 `;
 
-const Name = styled.p`
+const Name = styled.li`
+  text-decoration: none;
   color: grey;
   font-size: 0.8rem;
   line-height: 1.2rem;
   text-align: center;
 `;
 
-const Recipe = styled.p`
+const Recipe = styled.li`
+  text-decoration: none;
   color: darkgrey;
   font-size: 0.8rem;
   line-height: 1.4rem;
+  text-align: left;
+`;
+
+const Tag = styled.li`
+  text-decoration: none;
+  color: darkgreen;
+  font-size: 0.7rem;
+  line-height: 1rem;
   text-align: left;
 `;
