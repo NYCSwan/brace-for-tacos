@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-
+import recipeImage from "./recipe-card.png";
 // abrev version of recipes in stack, not open one in this form
 export default function RecipeCard({ taco, deleteOnClick }) {
   return (
@@ -28,6 +28,8 @@ const Recipe = styled.div`
   justify-content: space-around;
   align-items: center;
   overflow: scroll;
+  background-color: blue;
+  background-image: url(${recipeImage});
 `;
 
 const Header = styled.h3`
@@ -37,7 +39,7 @@ const Header = styled.h3`
   text-align: center;
 `;
 
-const Section = styled.div`
+const Section = styled.ul`
   height: auto;
   width: 100%;
   display: flex;
@@ -46,9 +48,10 @@ const Section = styled.div`
   align-items: center;
 `;
 
-const Text = styled.p`
+const Text = styled.li`
   color: darkgrey;
   font-size: 0.8rem;
   line-height: 1.4rem;
   text-align: left;
+  text-decoration: none;
 `;
