@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-// import { mapValues, pick, filter, pullAll } from "lodash";
+import { dropWhile } from "lodash";
 import styled from "styled-components";
 import ThemeContext from "../utils/Context";
 import usePrevious from "../utils/usePrevious";
@@ -8,6 +8,7 @@ const SearchParams = ({ tacos, ingredient, updateIngredient }) => {
   const [searchParams, updateParams] = useState([]);
   const [theme] = useContext(ThemeContext);
   const prevTacos = usePrevious(tacos);
+  const prevIngredient = usePrevious(ingredient);
 
   useEffect(() => {
     function initialSearchParams() {
@@ -25,10 +26,21 @@ const SearchParams = ({ tacos, ingredient, updateIngredient }) => {
       updateParams(names);
     }
 
-    if (tacos && prevTacos !== tacos) {
+    function updateSearchParams() {
+      const newParams = dropWhile(searchParams, option => {
+        return !option.toLowerCase().includes(ingredient.toLowerCase());
+      });
+      // debugger;
+      updateParams(newParams);
+    }
+
+    if ((tacos && !searchParams.length) || tacos !== prevTacos) {
       initialSearchParams();
     }
-  }, [searchParams, tacos, prevTacos]);
+    if (ingredient !== prevIngredient || tacos !== prevTacos) {
+      updateSearchParams();
+    }
+  }, [searchParams, tacos, prevTacos, ingredient, prevIngredient]);
 
   return (
     <Search>
