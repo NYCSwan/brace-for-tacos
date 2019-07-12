@@ -15,7 +15,7 @@ function Taco({ taco }) {
         <Name>{taco.base_layer.name}</Name>
         {taco.base_layer.instructions
           ? taco.base_layer.instructions.map(line => {
-              return <Ingredient>{line}</Ingredient>;
+              return <Ingredient key={line}>{line}</Ingredient>;
             })
           : null}
         <Name>{taco.mixin.name}</Name>
@@ -26,7 +26,7 @@ function Taco({ taco }) {
 
         {taco.mixin.instructions
           ? taco.mixin.instructions.map(line => {
-              return <Ingredient>{line}</Ingredient>;
+              return <Ingredient key={line}>{line}</Ingredient>;
             })
           : null}
         <Name>{taco.condiment.name}</Name>

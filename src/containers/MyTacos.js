@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import styled from "styled-components";
+import React from "react";
+// import styled from "styled-components";
 import TacoList from "../ui/TacoList";
 
 function MyTacos({ tacos }) {

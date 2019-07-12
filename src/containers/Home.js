@@ -50,7 +50,7 @@ function Home({ match }) {
   }
 
   function formatTacoResults(taco) {
-    forIn(taco, (value, key) => {
+    forIn(taco, value => {
       value.recipe = split(value.recipe, /\=(?!=)|\#(?!#)/g); // eslint-disable-line no-useless-escape
       if (value.recipe.length <= 1) {
         return taco; // not formatted
@@ -80,7 +80,6 @@ function Home({ match }) {
     const key = findKey(taco, layer => {
       return layer.tags;
     });
-    debugger;
     taco.tags = taco[key].tags; // move tags
 
     taco.id = `${replace(taco.base_layer.name, /\s/g, "")}-${replace(
@@ -88,7 +87,6 @@ function Home({ match }) {
       /\s/g,
       ""
     )}`;
-    console.log("taco", taco);
     return taco;
   }
 
