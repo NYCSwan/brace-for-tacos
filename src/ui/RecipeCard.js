@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import recipeImage from "./recipe-card.png";
-// abrev version of recipes in stack, not open one in this form
+
 export default function RecipeCard({ taco, deleteOnClick }) {
   return (
     <Recipe>
-      <div onClick={deleteOnClick} onBlur={deleteOnClick}>
-        close
-      </div>
+      <Icon
+        onClick={e => deleteOnClick(e, taco.id)}
+        onBlur={e => deleteOnClick(e)}
+      >
+        X
+      </Icon>
       <Header>{taco.base_layer.name} Tacos</Header>
       <Section>
         <Text>{taco.base_layer.name}</Text>
@@ -22,36 +24,43 @@ export default function RecipeCard({ taco, deleteOnClick }) {
 
 const Recipe = styled.div`
   height: 200px;
-  width: 45%;
+  width: 350px;
   display: flex;
   flex-flow: column nowrap;
-  justify-content: space-around;
+  justify-content: flex-start;
   align-items: center;
-  overflow: scroll;
-  background-color: blue;
-  background-image: url(${recipeImage});
+  overflow: visible;
+  border: #8d9093 1px solid;
 `;
 
 const Header = styled.h3`
-  color: grey;
+  color: #343330;
   font-size: 1rem;
-  line-height: 1.4rem;
+  line-height: 1.2rem;
   text-align: center;
+  align-self: flex-start;
+  width: 80%;
+`;
+
+const Icon = styled.div`
+  padding-top: 20px;
+  padding-right: 20px;
+  width: 20px;
+  height: 20px;
+  align-self: flex-end;
+  color: #343330;
 `;
 
 const Section = styled.ul`
   height: auto;
-  width: 100%;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: flex-start;
-  align-items: center;
+  width: 80%;
+  list-style: none;
 `;
 
 const Text = styled.li`
   color: darkgrey;
   font-size: 0.8rem;
-  line-height: 1.4rem;
+  line-height: 1rem;
   text-align: left;
   text-decoration: none;
 `;

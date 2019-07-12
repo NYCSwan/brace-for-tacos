@@ -1,13 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
+// import { remove } from "lodash";
 import styled from "styled-components";
 import RecipeCard from "./RecipeCard";
-import Search from "../containers/Search";
 
-function TacoList({ tacos, match }) {
-  // const [tacos, addTacos] = useState([]);
-  // const [taco, setTaco] = useState({});
-  // debugger;
+function TacoList({ tacos, deleteOnClick }) {
   if (tacos === undefined) {
     return (
       <div>
@@ -19,8 +16,13 @@ function TacoList({ tacos, match }) {
   return (
     <TacoRecipes>
       {tacos.map(t => {
-        // debugger;
-        return <RecipeCard key={t.mixin.name} taco={t} />;
+        return (
+          <RecipeCard
+            key={`${t.mixin.name}-${t.condiment.name}`}
+            deleteOnClick={deleteOnClick}
+            taco={t}
+          />
+        );
       })}
     </TacoRecipes>
   );
@@ -30,10 +32,10 @@ export default TacoList;
 
 const TacoRecipes = styled.div`
   height: 100%;
-  width: 100%;
+  width: 90%;
   overflow-y: visible;
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
 `;
