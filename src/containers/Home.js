@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { findIndex, replace, split, forIn, mapValues, remove } from "lodash";
+import { findIndex, replace, split, forIn, findKey, remove } from "lodash";
 import styled from "styled-components";
 import Search from "../ui/Search";
 import SearchParams from "../ui/SearchParams";
@@ -22,31 +22,30 @@ function Home({ match }) {
   async function onButtonClick(e) {
     e.preventDefault();
 
-    setLoading(true);
     const result = await fetch("https://taco-randomizer.herokuapp.com/random/");
     let taco = await result.json();
     taco = formatTacoResults(taco);
     setTaco(taco);
-    console.log("taco", taco);
-    // console.log("tacos", tacos);
+    setLoading(true);
 
     return taco;
   }
 
   function onSubmitFilter(e) {
     e.preventDefault();
+    const searchText = ingredient.toLowerCase();
+
     let tacoIndex = findIndex(tacos, taco => {
       if (
-        taco.base_layer.name.toLowerCase().includes(ingredient) ||
-        taco.mixin.name.toLowerCase().includes(ingredient) ||
-        taco.seasoning.name.toLowerCase().includes(ingredient) ||
-        taco.shell.name.toLowerCase().includes(ingredient) ||
-        taco.condiment.name.toLowerCase().includes(ingredient)
+        taco.base_layer.name.toLowerCase().includes(searchText) ||
+        taco.mixin.name.toLowerCase().includes(searchText) ||
+        taco.seasoning.name.toLowerCase().includes(searchText) ||
+        taco.shell.name.toLowerCase().includes(searchText) ||
+        taco.condiment.name.toLowerCase().includes(searchText)
       ) {
         return taco;
       }
     });
-    debugger;
     setTaco(tacos[tacoIndex]);
   }
 
@@ -58,9 +57,15 @@ function Home({ match }) {
       } else {
         value.recipe.filter(i => {
           return typeof i === "string" && i.length > 2;
-        }); //remove undefined and random characters
+        }); //remove undefined and random api string formats
       }
-      value.tags = value.recipe[1].split("tags")[1];
+
+      let tag = value.recipe[1].split("tags:")[1];
+      if (tag !== undefined) {
+        value.tags = tag.trim();
+        return value.tags;
+      } //tags
+
       value.ingredients = value.recipe[1].split(/(Ingredients)|\*/g);
       if (value.ingredients.length > 1) {
         value.ingredients = value.ingredients.filter(i => {
@@ -68,27 +73,26 @@ function Home({ match }) {
         }); //remove undefined
         value.directions = value.ingredients.pop();
         value.description = value.ingredients.shift();
-      }
-    });
+        return value;
+      } // ingredients
+    }); //sort recipe layers
 
-    taco.tags = mapValues(taco, (value, key) => {
-      if (value.tags === "undefined") {
-        delete value.tags;
-      } else {
-        return value.tags;
-      }
+    const key = findKey(taco, layer => {
+      return layer.tags;
     });
+    debugger;
+    taco.tags = taco[key].tags; // move tags
 
     taco.id = `${replace(taco.base_layer.name, /\s/g, "")}-${replace(
       taco.mixin.name,
       /\s/g,
       ""
     )}`;
+    console.log("taco", taco);
     return taco;
   }
 
   function deleteOnClick(e, tacoId) {
-    debugger;
     if (tacos.length === 1) {
       setTaco({});
       addTacos([]);
@@ -104,8 +108,6 @@ function Home({ match }) {
   }
 
   useEffect(() => {
-    console.log("useEffect");
-
     function updateFilteredList() {
       const newList = filteredList;
 
@@ -213,7 +215,7 @@ const Img = styled.img`
 const HeaderText = styled.h3`
   font-size: 1rem;
   line-height: 1.5rem;
-  width: 70%;
+  width: auto;
 `;
 
 const Subtext = styled.h3`
@@ -226,7 +228,7 @@ const Main = styled.div`
   display: flex;
   flex-flow: row-reverse wrap;
   width: 90%;
-  height: inherit;
+  height: 100%;
   justify-content: center';
   margin-bottom: 4%;
 `;
@@ -240,4 +242,5 @@ const SearchContainer = styled.div`
   align-items: center;
   overflow: visible;
 `;
+
 export default Home;

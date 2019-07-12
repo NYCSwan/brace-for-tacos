@@ -78,7 +78,10 @@ const SearchParams = ({
             }}
             disabled={!searchParams.length}
           />
-          <Options searchParams={searchParams} />
+          <Options
+            searchParams={searchParams}
+            display={ingredient.length >= 1}
+          />
         </Label>
         <Button style={{ backgroundColor: theme }}>Submit</Button>
       </Form>
