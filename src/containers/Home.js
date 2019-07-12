@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { replace, split, forIn, mapValues } from "lodash";
+import { findIndex, replace, split, forIn, mapValues, remove } from "lodash";
 import styled from "styled-components";
 import Search from "../ui/Search";
 import SearchParams from "../ui/SearchParams";
 import TacoList from "../ui/TacoList";
 import Taco from "../ui/Taco";
 import usePrevious from "../utils/usePrevious";
+import tacoImg from "../taco-love.jpg";
 
 function Home({ match }) {
   const [loaded, setLoading] = useState(false);
@@ -15,11 +16,12 @@ function Home({ match }) {
   const [ingredient, updateIngredient] = useState("");
 
   const prevTaco = usePrevious(taco);
+  const prevTacos = usePrevious(tacos);
   const prevIngredient = usePrevious(ingredient);
 
   async function onButtonClick(e) {
     e.preventDefault();
-    if (loaded) return;
+
     setLoading(true);
     const result = await fetch("https://taco-randomizer.herokuapp.com/random/");
     let taco = await result.json();
@@ -33,19 +35,19 @@ function Home({ match }) {
 
   function onSubmitFilter(e) {
     e.preventDefault();
-    tacos.map(taco => {
+    let tacoIndex = findIndex(tacos, taco => {
       if (
-        taco.base_layer.name.includes(ingredient) ||
-        taco.mixin.name.includes(ingredient) ||
-        taco.seasoning.name.includes(ingredient) ||
-        taco.shell.name.includes(ingredient) ||
-        taco.condiment.name.includes(ingredient)
+        taco.base_layer.name.toLowerCase().includes(ingredient) ||
+        taco.mixin.name.toLowerCase().includes(ingredient) ||
+        taco.seasoning.name.toLowerCase().includes(ingredient) ||
+        taco.shell.name.toLowerCase().includes(ingredient) ||
+        taco.condiment.name.toLowerCase().includes(ingredient)
       ) {
-        setTaco(taco);
-        return;
+        return taco;
       }
-      return;
     });
+    debugger;
+    setTaco(tacos[tacoIndex]);
   }
 
   function formatTacoResults(taco) {
@@ -85,12 +87,26 @@ function Home({ match }) {
     return taco;
   }
 
+  function deleteOnClick(e, tacoId) {
+    debugger;
+    if (tacos.length === 1) {
+      setTaco({});
+      addTacos([]);
+      filterTacosList([]);
+      setLoading(false);
+      return;
+    }
+    remove(tacos, taco => {
+      return taco.id === tacoId;
+    });
+    addTacos(tacos);
+    filterTacosList(tacos);
+  }
+
   useEffect(() => {
+    console.log("useEffect");
+
     function updateFilteredList() {
-      if (ingredient === undefined || ingredient === "") {
-        filterTacosList(tacos);
-        // return;
-      } //return full list
       const newList = filteredList;
 
       newList.forEach(recipe => {
@@ -100,11 +116,11 @@ function Home({ match }) {
         const condiment = recipe.condiment.name;
         const shell = recipe.shell.name;
         if (
-          !base.includes(ingredient) &&
-          !mixin.includes(ingredient) &&
-          !seasoning.includes(ingredient) &&
-          !condiment.includes(ingredient) &&
-          !shell.includes(ingredient)
+          !base.toLowerCase().includes(ingredient) &&
+          !mixin.toLowerCase().includes(ingredient) &&
+          !seasoning.toLowerCase().includes(ingredient) &&
+          !condiment.toLowerCase().includes(ingredient) &&
+          !shell.toLowerCase().includes(ingredient)
         ) {
           recipe = undefined;
           return recipe;
@@ -115,22 +131,32 @@ function Home({ match }) {
       filterTacosList(newList);
     }
 
-    function updateTacos() {
+    function addRecipeToTacos() {
       addTacos([...tacos, taco]);
       filterTacosList(tacos);
     }
 
     if (taco.hasOwnProperty("id") && prevTaco !== taco) {
-      updateTacos();
+      addRecipeToTacos();
     }
-    if (ingredient !== prevIngredient) {
+
+    if (ingredient !== prevIngredient || tacos.length !== prevTacos.length) {
       updateFilteredList();
     } //filter out recipes that do not include ingredient
-  }, [tacos, taco, prevTaco, ingredient, prevIngredient, filteredList]);
+  }, [
+    tacos,
+    prevTacos,
+    taco,
+    prevTaco,
+    ingredient,
+    prevIngredient,
+    filteredList
+  ]);
 
   if (!taco.hasOwnProperty("id")) {
     return (
       <Outer>
+        <Img src={tacoImg} alt="Taco image meme" />
         <HeaderText>
           Everyone loves tacos! I love to cook and eat. It is a fundamental part
           of who I am. This app uses the TacoFacy API to help you find a delish
@@ -147,19 +173,23 @@ function Home({ match }) {
         How do you feel about {taco.base_layer.name} tacos? Not your thing? Find
         another recipe or search your list for options.
       </HeaderText>
-      <Taco taco={taco} match={match} />
-      <SearchContainer>
-        {tacos.length >= 1 && (
-          <SearchParams
-            tacos={tacos}
-            ingredient={ingredient}
-            updateIngredient={updateIngredient}
-            onSubmitFilter={onSubmitFilter}
-          />
-        )}
-        <Search onButtonClick={onButtonClick} loaded={loaded} />
-      </SearchContainer>
-      {filteredList.length >= 1 ? <TacoList tacos={filteredList} /> : null}
+      <Main>
+        <Taco taco={taco} match={match} />
+        <SearchContainer>
+          {tacos.length >= 1 && (
+            <SearchParams
+              tacos={tacos}
+              ingredient={ingredient}
+              updateIngredient={updateIngredient}
+              onSubmitFilter={onSubmitFilter}
+            />
+          )}
+          <Search onButtonClick={onButtonClick} loaded={loaded} />
+        </SearchContainer>
+      </Main>
+      {filteredList.length >= 1 ? (
+        <TacoList tacos={filteredList} deleteOnClick={deleteOnClick} />
+      ) : null}
     </Outer>
   );
 }
@@ -175,6 +205,11 @@ const Outer = styled.div`
   overflow: scroll;
 `;
 
+const Img = styled.img`
+  height: auto;
+  width: 30%;
+`;
+
 const HeaderText = styled.h3`
   font-size: 1rem;
   line-height: 1.5rem;
@@ -186,12 +221,22 @@ const Subtext = styled.h3`
   line-height: 1.2rem;
   width: auto;
 `;
+
+const Main = styled.div`
+  display: flex;
+  flex-flow: row-reverse wrap;
+  width: 90%;
+  height: inherit;
+  justify-content: center';
+  margin-bottom: 4%;
+`;
+
 const SearchContainer = styled.div`
   height: 100%;
-  width: 100%;
+  width: 50%;
   display: flex;
   flex-flow: row nowrap;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   overflow: visible;
 `;

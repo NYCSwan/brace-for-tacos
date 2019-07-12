@@ -9,6 +9,7 @@ function Search({ onButtonClick, loaded }) {
     return (
       <BtnContainerEnd>
         <Button
+          disabled={false}
           style={{ backgroundColor: theme }}
           onClick={e => onButtonClick(e)}
         >
@@ -20,6 +21,7 @@ function Search({ onButtonClick, loaded }) {
   return (
     <BtnContainer>
       <Button
+        disabled={false}
         style={{ backgroundColor: theme }}
         onClick={e => onButtonClick(e)}
       >

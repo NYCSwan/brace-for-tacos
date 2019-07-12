@@ -61,12 +61,7 @@ const SearchParams = ({
 
   return (
     <Search>
-      <Form
-        onSubmit={e => {
-          onSubmitFilter(e);
-          updateIngredient("");
-        }}
-      >
+      <Form onSubmit={onSubmitFilter}>
         <Label htmlFor="ingredient">
           Taco Layer
           <Input
