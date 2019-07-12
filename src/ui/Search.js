@@ -1,25 +1,44 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import ThemeContext from "../utils/Context";
 
-function Search({ onButtonClick }) {
-  const [loading, setLoading] = useState(false);
-
+function Search({ onButtonClick, loaded }) {
   const [theme] = useContext(ThemeContext);
 
+  if (loaded) {
+    return (
+      <BtnContainerEnd>
+        <Button
+          style={{ backgroundColor: theme }}
+          onClick={e => onButtonClick(e)}
+        >
+          Find a New Recipe
+        </Button>
+      </BtnContainerEnd>
+    );
+  }
   return (
-    <div>
+    <BtnContainer>
       <Button
         style={{ backgroundColor: theme }}
-        disabled={loading}
         onClick={e => onButtonClick(e)}
       >
         Find a Recipe
       </Button>
-    </div>
+    </BtnContainer>
   );
 }
 
+const BtnContainer = styled.div`
+  height: 40px;
+  width: 110px;
+`;
+
+const BtnContainerEnd = styled.div`
+  height: 40px;
+  width: 110px;
+  align-self: flex-end;
+`;
 const Button = styled.button`
   height: 40px;
   width: 100px;

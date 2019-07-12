@@ -8,7 +8,7 @@ import Taco from "../ui/Taco";
 import usePrevious from "../utils/usePrevious";
 
 function Home({ match }) {
-  const [loading, setLoading] = useState(false);
+  const [loaded, setLoading] = useState(false);
   const [tacos, addTacos] = useState([]);
   const [taco, setTaco] = useState({});
   const [filteredList, filterTacosList] = useState([]);
@@ -19,7 +19,7 @@ function Home({ match }) {
 
   async function onButtonClick(e) {
     e.preventDefault();
-    if (loading) return;
+    if (loaded) return;
     setLoading(true);
     const result = await fetch("https://taco-randomizer.herokuapp.com/random/");
     let taco = await result.json();
@@ -27,9 +27,25 @@ function Home({ match }) {
     setTaco(taco);
     console.log("taco", taco);
     // console.log("tacos", tacos);
-    setLoading(false);
 
     return taco;
+  }
+
+  function onSubmitFilter(e) {
+    e.preventDefault();
+    tacos.map(taco => {
+      if (
+        taco.base_layer.name.includes(ingredient) ||
+        taco.mixin.name.includes(ingredient) ||
+        taco.seasoning.name.includes(ingredient) ||
+        taco.shell.name.includes(ingredient) ||
+        taco.condiment.name.includes(ingredient)
+      ) {
+        setTaco(taco);
+        return;
+      }
+      return;
+    });
   }
 
   function formatTacoResults(taco) {
@@ -61,7 +77,11 @@ function Home({ match }) {
       }
     });
 
-    taco.id = replace(taco.base_layer.name, /\s/g, "");
+    taco.id = `${replace(taco.base_layer.name, /\s/g, "")}-${replace(
+      taco.mixin.name,
+      /\s/g,
+      ""
+    )}`;
     return taco;
   }
 
@@ -69,7 +89,7 @@ function Home({ match }) {
     function updateFilteredList() {
       if (ingredient === undefined || ingredient === "") {
         filterTacosList(tacos);
-        return;
+        // return;
       } //return full list
       const newList = filteredList;
 
@@ -106,7 +126,7 @@ function Home({ match }) {
     if (ingredient !== prevIngredient) {
       updateFilteredList();
     } //filter out recipes that do not include ingredient
-  }, [tacos, taco, prevTaco, ingredient, prevIngredient]);
+  }, [tacos, taco, prevTaco, ingredient, prevIngredient, filteredList]);
 
   if (!taco.hasOwnProperty("id")) {
     return (
@@ -117,24 +137,30 @@ function Home({ match }) {
           taco recipe to inspire your next meal.
         </HeaderText>
         <Subtext>Click on the button to find a recipe.</Subtext>
-        <Search onButtonClick={onButtonClick} />
+        <Search onButtonClick={onButtonClick} loaded={loaded} />
       </Outer>
     ); // starting screen '/'
   }
   return (
-    <div>
-      <p>How do you feel about {taco.base_layer.name} tacos?</p>
+    <Outer>
+      <HeaderText>
+        How do you feel about {taco.base_layer.name} tacos? Not your thing? Find
+        another recipe or search your list for options.
+      </HeaderText>
       <Taco taco={taco} match={match} />
-      {tacos.length >= 1 && (
-        <SearchParams
-          tacos={tacos}
-          ingredient={ingredient}
-          updateIngredient={updateIngredient}
-        />
-      )}
-      <Search onButtonClick={onButtonClick} />
+      <SearchContainer>
+        {tacos.length >= 1 && (
+          <SearchParams
+            tacos={tacos}
+            ingredient={ingredient}
+            updateIngredient={updateIngredient}
+            onSubmitFilter={onSubmitFilter}
+          />
+        )}
+        <Search onButtonClick={onButtonClick} loaded={loaded} />
+      </SearchContainer>
       {filteredList.length >= 1 ? <TacoList tacos={filteredList} /> : null}
-    </div>
+    </Outer>
   );
 }
 
@@ -159,5 +185,14 @@ const Subtext = styled.h3`
   font-size: 0.8rem;
   line-height: 1.2rem;
   width: auto;
+`;
+const SearchContainer = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
 `;
 export default Home;

@@ -3,12 +3,25 @@ import { dropWhile } from "lodash";
 import styled from "styled-components";
 import ThemeContext from "../utils/Context";
 import usePrevious from "../utils/usePrevious";
+import Options from "./Options";
 
-const SearchParams = ({ tacos, ingredient, updateIngredient }) => {
+const SearchParams = ({
+  tacos,
+  ingredient,
+  onSubmitFilter,
+  updateIngredient
+}) => {
   const [searchParams, updateParams] = useState([]);
   const [theme] = useContext(ThemeContext);
   const prevTacos = usePrevious(tacos);
   const prevIngredient = usePrevious(ingredient);
+
+  function updateSearchParams() {
+    const newParams = dropWhile(searchParams, option => {
+      return !option.toLowerCase().includes(ingredient.toLowerCase());
+    });
+    updateParams(newParams);
+  } //compare to searchParams, return only matching results
 
   useEffect(() => {
     function initialSearchParams() {
@@ -26,77 +39,91 @@ const SearchParams = ({ tacos, ingredient, updateIngredient }) => {
       updateParams(names);
     }
 
-    function updateSearchParams() {
-      const newParams = dropWhile(searchParams, option => {
-        return !option.toLowerCase().includes(ingredient.toLowerCase());
-      });
-      // debugger;
-      updateParams(newParams);
-    }
-
-    if ((tacos && !searchParams.length) || tacos !== prevTacos) {
+    if (
+      (tacos && !searchParams.length) ||
+      tacos.length > prevTacos.length ||
+      tacos.length < prevTacos.length
+    ) {
       initialSearchParams();
     }
-    if (ingredient !== prevIngredient || tacos !== prevTacos) {
-      updateSearchParams();
+
+    if (tacos && searchParams.length && tacos.length !== prevTacos.length) {
+      debugger;
+
+      initialSearchParams();
+      // updateSearchParams();
     }
+
+    // if (ingredient !== prevIngredient) {
+    //   updateSearchParams();
+    // }
   }, [searchParams, tacos, prevTacos, ingredient, prevIngredient]);
 
   return (
     <Search>
-      <p>
-        This one not your thing? Find another one or search your list for
-        options.
-      </p>
-      <form
+      <Form
         onSubmit={e => {
-          e.preventDefault();
-          debugger;
-          // updateList();
+          onSubmitFilter(e);
+          updateIngredient("");
         }}
       >
-        <label htmlFor="ingredient">
+        <Label htmlFor="ingredient">
           Taco Layer
-          <input
+          <Input
             id="ingredient"
             value={ingredient}
             placeholder="Add an ingredient"
             onChange={e => {
               updateIngredient(e.target.value);
+              updateSearchParams(e.target.value);
             }}
             onBlur={e => {
               updateIngredient(e.target.value);
+              updateSearchParams(e.target.value);
             }}
             disabled={!searchParams.length}
           />
-          <Params>
-            {searchParams.length
-              ? searchParams.map(recipe => (
-                  <Option key={recipe}>{recipe}</Option>
-                ))
-              : null}
-          </Params>
-        </label>
-        <button style={{ backgroundColor: theme }}>Submit</button>
-      </form>
+          <Options searchParams={searchParams} />
+        </Label>
+        <Button style={{ backgroundColor: theme }}>Submit</Button>
+      </Form>
     </Search>
   );
 };
 const Search = styled.div`
+  padding-top: 3%;
   height: 100%;
-  width: 100%;
+  width: auto;
   display: flex;
   flex-flow: column wrap;
   justify-content: space-around;
   align-items: center;
-  overflow: scroll;
 `;
-const Params = styled.ul`
-  list-style: none;
+const Form = styled.form`
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: space-around;
+  align-items: center;
 `;
 
-const Option = styled.li`
-  font-size: 1rem;
+const Label = styled.label`
+  font-size: 0.9rem;
+  text-align: left;
+  width: auto;
+`;
+
+const Input = styled.input`
+  font-size: 0.9rem;
+  text-align: center;
+  margin-left: 15px;
+  width: auto;
+  height: auto;
+  word-break: keep-all;
+`;
+const Button = styled.button`
+  height: 40px;
+  width: 100px;
+  align-self: center;
 `;
 
 export default SearchParams;
