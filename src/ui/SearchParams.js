@@ -48,15 +48,8 @@ const SearchParams = ({
     }
 
     if (tacos && searchParams.length && tacos.length !== prevTacos.length) {
-      debugger;
-
       initialSearchParams();
-      // updateSearchParams();
     }
-
-    // if (ingredient !== prevIngredient) {
-    //   updateSearchParams();
-    // }
   }, [searchParams, tacos, prevTacos, ingredient, prevIngredient]);
 
   return (
