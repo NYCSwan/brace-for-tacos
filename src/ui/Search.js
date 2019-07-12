@@ -1,45 +1,49 @@
-import React, { useState, useEffect, } from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
-import Taco from './Taco';
+import ThemeContext from "../utils/Context";
 
-function Search() {
-  const [taco, setTaco] = useState({ taco: {} });
-  const [loading, setLoading] = useState(false);
+function Search({ onButtonClick, loaded }) {
+  const [theme] = useContext(ThemeContext);
 
-  async function handleClick() {
-    // if (loading) return
-    setLoading(true)
-    console.log('click');
-    const result = await fetch("https://taco-randomizer.herokuapp.com/random/");
-    debugger
-    const taco = await result.json();
-    setTaco(taco)
-    setLoading(false)
-  };
-  //
-  // useEffect(() => {
-  //
-  //   async function fetchTaco() {
-  //     const result = await fetch("https://taco-randomizer.herokuapp.com/random/");
-  //     const taco = await result.json();
-  //     setTaco(taco)
-  //   }
-  //   fetchTaco();
-  // }, [])
-
-return (
-    <div>
-      <Button disabled={loading} onClick={() => handleClick()}>click</Button>
-        {taco && <Taco />}
-
-    </div>
+  if (loaded) {
+    return (
+      <BtnContainerEnd>
+        <Button
+          disabled={false}
+          style={{ backgroundColor: theme }}
+          onClick={e => onButtonClick(e)}
+        >
+          Find a New Recipe
+        </Button>
+      </BtnContainerEnd>
+    );
+  }
+  return (
+    <BtnContainer>
+      <Button
+        disabled={false}
+        style={{ backgroundColor: theme }}
+        onClick={e => onButtonClick(e)}
+      >
+        Find a Recipe
+      </Button>
+    </BtnContainer>
   );
 }
 
+const BtnContainer = styled.div`
+  height: 40px;
+  width: 110px;
+`;
+
+const BtnContainerEnd = styled.div`
+  height: 40px;
+  width: 110px;
+  align-self: flex-end;
+`;
 const Button = styled.button`
-  height: 50px;
-  width: 75px;
-  background-color: blue;
+  height: 40px;
+  width: 100px;
 `;
 
 export default Search;
