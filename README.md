@@ -1,9 +1,9 @@
-#Brace For Tacos
-###API challenge
+Brace For Tacos
+API challenge
 
 This app uses [TacoFancy](https://github.com/evz/tacofancy-api), a public api with taco recipe data to create mixed and matched taco recipes for any meal or picky eater.
 
-##Getting started
+Getting started
 clone and install dependencies
 ```npm install```
 
