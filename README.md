@@ -1,9 +1,22 @@
-Brace interview code project
+#Brace For Tacos
+###API challenge
 
-On startup describes the type of a data a user will receive, along with a button, which when clicked calls to the api, and displays the data on screen, replacing the description text with a table or list type view.
+This app uses [TacoFancy](https://github.com/evz/tacofancy-api), a public api with taco recipe data to create mixed and matched taco recipes for any meal or picky eater.
 
-2. Allow a user to request more items somehow. This should add to the current list, rather than replacing it (this might be with another click somewhere, a next button, an infinite scroller, etc)
-3. Add an input somewhere that, as a user types into it, filters the currently showing results (no need to fetch things based on this, just filter the current list as is).
-4. When clicking on an item in this list or table view, navigate to an item specific view that shows a bit more detail. If we go to this route directly (instead of navigating with links) we should still see the content here
+##Getting started
+clone and install dependencies
+```npm install```
+
+start in dev mode on localhost:3000:
+```npm run start```
+
+TBD
+-Refine styling
+-Refactor recipe sorting functionality to include tags, ingredients in each layer of the taco
+-Refactor Error Handling- 404 pg, etc
+-Add routes for tacos, nest in Home
+-Build out second route for saved tacos
+-Testing
+
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
